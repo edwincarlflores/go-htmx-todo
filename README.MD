@@ -29,3 +29,4 @@ Go to `localhost:4000`
 - [Fiber](https://docs.gofiber.io/)
 - [HTMX](https://htmx.org/)
 - [TEMPL](https://templ.guide/)
+- [tailwindcss](https://tailwindcss.com/)
