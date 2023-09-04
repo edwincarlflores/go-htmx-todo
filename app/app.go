@@ -2,6 +2,7 @@ package app
 
 import (
 	"log"
+	"slices"
 
 	"github.com/a-h/templ"
 	"github.com/edwincarlflores/go-htmx-todo/components"
@@ -63,7 +64,22 @@ func App() {
 			}
 		}
 
-		return c.Status(fiber.StatusNotFound).SendString("Unable to find todo item")
+		return nil
+	})
+
+	app.Delete("/todos/:id", func(c *fiber.Ctx) error {
+		id, err := c.ParamsInt("id")
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+		}
+
+		todos = slices.DeleteFunc(todos, func(todo types.Todo) bool {
+			return id == todo.ID
+		})
+
+		return nil
+
 	})
 
 	log.Fatal(app.Listen(":4000"))
