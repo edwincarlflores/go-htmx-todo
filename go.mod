@@ -2,11 +2,13 @@ module github.com/edwincarlflores/go-htmx-todo
 
 go 1.19
 
-require github.com/a-h/templ v0.2.316
+require (
+	github.com/a-h/templ v0.2.316
+	github.com/gofiber/fiber/v2 v2.49.1
+)
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
-	github.com/gofiber/fiber/v2 v2.49.1 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

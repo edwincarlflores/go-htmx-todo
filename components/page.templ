@@ -1,0 +1,16 @@
+package components
+
+templ Page(pageName string, name string) {
+	<html>
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ pageName }</title>
+			<script src="https://cdn.tailwindcss.com"></script>
+			<script src="/assets/js/htmx.min.js"></script>
+		</head>
+		<body>
+			@Hello(name)
+		</body>
+	</html>
+}
