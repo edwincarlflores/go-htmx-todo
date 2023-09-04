@@ -9,7 +9,7 @@ import "context"
 import "io"
 import "bytes"
 
-func Page(pageName string, name string) templ.Component {
+func Page(pageName string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -53,7 +53,7 @@ func Page(pageName string, name string) templ.Component {
 		if err != nil {
 			return err
 		}
-		err = Hello(name).Render(ctx, templBuffer)
+		err = var_1.Render(ctx, templBuffer)
 		if err != nil {
 			return err
 		}

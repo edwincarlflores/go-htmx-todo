@@ -9,7 +9,12 @@ import "context"
 import "io"
 import "bytes"
 
-func Hello(name string) templ.Component {
+import (
+	"fmt"
+	"github.com/edwincarlflores/go-htmx-todo/types"
+)
+
+func TodoItem(todo types.Todo) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -22,26 +27,47 @@ func Hello(name string) templ.Component {
 			var_1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<div class=\"flex h-screen w-full justify-center items-center text-pink-700\">")
+		_, err = templBuffer.WriteString("<div class=\"flex flex-row space-x-3\"><p>")
 		if err != nil {
 			return err
 		}
-		var_2 := `Hello, `
-		_, err = templBuffer.WriteString(var_2)
+		var var_2 string = todo.Title
+		_, err = templBuffer.WriteString(templ.EscapeString(var_2))
 		if err != nil {
 			return err
 		}
-		var var_3 string = name
-		_, err = templBuffer.WriteString(templ.EscapeString(var_3))
+		_, err = templBuffer.WriteString("</p><input type=\"checkbox\"")
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("<br><button hx-post=\"/clicked\" hx-swap=\"outerHTML\">")
+		if todo.Done {
+			_, err = templBuffer.WriteString(" checked")
+			if err != nil {
+				return err
+			}
+		}
+		_, err = templBuffer.WriteString(" hx-post=\"")
 		if err != nil {
 			return err
 		}
-		var_4 := `Click Me!`
-		_, err = templBuffer.WriteString(var_4)
+		_, err = templBuffer.WriteString(templ.EscapeString(fmt.Sprintf("/todos/toggle/%d", todo.ID)))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("\" hx-target=\"closest div\" hx-swap=\"outerHTML\"><button class=\"text-red-500\" hx-delete=\"")
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString(templ.EscapeString(fmt.Sprintf("/todos/%d", todo.ID)))
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString("\" hx-swap=\"outerHTML\" hx-target=\"closest div\">")
+		if err != nil {
+			return err
+		}
+		var_3 := `X`
+		_, err = templBuffer.WriteString(var_3)
 		if err != nil {
 			return err
 		}
@@ -56,7 +82,7 @@ func Hello(name string) templ.Component {
 	})
 }
 
-func Clicked() templ.Component {
+func TodoList(todos []types.Todo) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
 		templBuffer, templIsBuffer := w.(*bytes.Buffer)
 		if !templIsBuffer {
@@ -64,19 +90,20 @@ func Clicked() templ.Component {
 			defer templ.ReleaseBuffer(templBuffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		var_5 := templ.GetChildren(ctx)
-		if var_5 == nil {
-			var_5 = templ.NopComponent
+		var_4 := templ.GetChildren(ctx)
+		if var_4 == nil {
+			var_4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<div class=\"flex h-screen w-full justify-center items-center text-pink-700\">")
+		_, err = templBuffer.WriteString("<div>")
 		if err != nil {
 			return err
 		}
-		var_6 := `I'm from the server`
-		_, err = templBuffer.WriteString(var_6)
-		if err != nil {
-			return err
+		for _, todo := range todos {
+			err = TodoItem(todo).Render(ctx, templBuffer)
+			if err != nil {
+				return err
+			}
 		}
 		_, err = templBuffer.WriteString("</div>")
 		if err != nil {

@@ -1,0 +1,35 @@
+package components
+
+import (
+  "fmt"
+  "github.com/edwincarlflores/go-htmx-todo/types"
+)
+
+templ TodoItem(todo types.Todo){
+  <div class="flex flex-row space-x-3">
+      <p>{ todo.Title }</p>
+      <input
+        type="checkbox"
+        checked?={todo.Done}
+        hx-post={fmt.Sprintf("/todos/toggle/%d", todo.ID)}
+        hx-target="closest div"
+        hx-swap="outerHTML"
+      />
+      <button
+        class="text-red-500"
+        hx-delete={fmt.Sprintf("/todos/%d", todo.ID)}
+        hx-swap="outerHTML"
+        hx-target="closest div"
+      >
+        X
+      </button>
+    </div>
+}
+
+templ TodoList(todos []types.Todo) {
+  <div>
+    for _, todo := range todos {
+      @TodoItem(todo)
+    } 
+  </div>
+}

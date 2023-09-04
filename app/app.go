@@ -5,41 +5,48 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/edwincarlflores/go-htmx-todo/components"
+	"github.com/edwincarlflores/go-htmx-todo/types"
 	"github.com/gofiber/fiber/v2"
 )
-
-type Todo struct {
-	ID    int    `json:"id"`
-	Title string `json:"title"`
-	Done  bool   `json:"done"`
-	Body  string `json:"body"`
-}
 
 func App() {
 	app := fiber.New()
 
 	app.Static("/assets", "./assets")
 
-	todos := []Todo{}
+	todos := []types.Todo{
+		{
+			ID:    1,
+			Title: "First item",
+			Done:  false,
+			Body:  "This is an item",
+		},
+		{
+			ID:    2,
+			Title: "Second item",
+			Done:  false,
+			Body:  "This is another item",
+		},
+	}
 
 	app.Get("/healthcheck", func(c *fiber.Ctx) error {
 		return c.SendString(("OK"))
 	})
 
-	app.Get("/todos", func(c *fiber.Ctx) error {
-		return c.JSON(todos)
-	})
-
 	app.Get("/test", func(c *fiber.Ctx) error {
-		return HTML(c, components.Page("Test", "John"))
-	})
-
-	app.Get("/tested", func(c *fiber.Ctx) error {
-		return HTML(c, components.Page("Tested", "Ed"))
+		return HTML(c, components.Page("Test"))
 	})
 
 	app.Post("/clicked", func(c *fiber.Ctx) error {
 		return HTML(c, components.Clicked())
+	})
+
+	app.Get("/todos", func(c *fiber.Ctx) error {
+		return HTML(c, components.TodoList(todos))
+	})
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return HTML(c, components.TodosPage())
 	})
 
 	log.Fatal(app.Listen(":4000"))
