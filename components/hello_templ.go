@@ -22,7 +22,7 @@ func Hello(name string) templ.Component {
 			var_1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<div class=\"flex h-screen w-full justify-center items-center text-pink-700\">")
+		_, err = templBuffer.WriteString("<div class=\"flex h-screen w-full justify-center items-center text-blue-600\">")
 		if err != nil {
 			return err
 		}
@@ -36,12 +36,21 @@ func Hello(name string) templ.Component {
 		if err != nil {
 			return err
 		}
-		_, err = templBuffer.WriteString("<br><button hx-post=\"/clicked\" hx-swap=\"outerHTML\">")
+		_, err = templBuffer.WriteString(" ")
 		if err != nil {
 			return err
 		}
-		var_4 := `Click Me!`
+		var_4 := `&nbsp;`
 		_, err = templBuffer.WriteString(var_4)
+		if err != nil {
+			return err
+		}
+		_, err = templBuffer.WriteString(" <button hx-post=\"/clicked\" hx-swap=\"outerHTML\" hx-target=\"closest div\">")
+		if err != nil {
+			return err
+		}
+		var_5 := `Click Me!`
+		_, err = templBuffer.WriteString(var_5)
 		if err != nil {
 			return err
 		}
@@ -64,21 +73,60 @@ func Clicked() templ.Component {
 			defer templ.ReleaseBuffer(templBuffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		var_5 := templ.GetChildren(ctx)
-		if var_5 == nil {
-			var_5 = templ.NopComponent
+		var_6 := templ.GetChildren(ctx)
+		if var_6 == nil {
+			var_6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, err = templBuffer.WriteString("<div class=\"flex h-screen w-full justify-center items-center text-pink-700\">")
+		_, err = templBuffer.WriteString("<div class=\"flex h-screen w-full justify-center items-center text-blue-600\">")
 		if err != nil {
 			return err
 		}
-		var_6 := `I'm from the server`
-		_, err = templBuffer.WriteString(var_6)
+		var_7 := `I'm from the server`
+		_, err = templBuffer.WriteString(var_7)
 		if err != nil {
 			return err
 		}
 		_, err = templBuffer.WriteString("</div>")
+		if err != nil {
+			return err
+		}
+		if !templIsBuffer {
+			_, err = io.Copy(w, templBuffer)
+		}
+		return err
+	})
+}
+
+func TestPage(name string) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		templBuffer, templIsBuffer := w.(*bytes.Buffer)
+		if !templIsBuffer {
+			templBuffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templBuffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		var_8 := templ.GetChildren(ctx)
+		if var_8 == nil {
+			var_8 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		var_9 := templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+			templBuffer, templIsBuffer := w.(*bytes.Buffer)
+			if !templIsBuffer {
+				templBuffer = templ.GetBuffer()
+				defer templ.ReleaseBuffer(templBuffer)
+			}
+			err = Hello(name).Render(ctx, templBuffer)
+			if err != nil {
+				return err
+			}
+			if !templIsBuffer {
+				_, err = io.Copy(w, templBuffer)
+			}
+			return err
+		})
+		err = Page("Test").Render(templ.WithChildren(ctx, var_9), templBuffer)
 		if err != nil {
 			return err
 		}

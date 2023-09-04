@@ -34,7 +34,7 @@ func App() {
 	})
 
 	app.Get("/test", func(c *fiber.Ctx) error {
-		return HTML(c, components.Page("Test"))
+		return HTML(c, components.TestPage("Prime"))
 	})
 
 	app.Post("/clicked", func(c *fiber.Ctx) error {

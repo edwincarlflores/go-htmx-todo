@@ -1,16 +1,22 @@
 package components
 
 templ Hello(name string) {
-	<div class="flex h-screen w-full justify-center items-center text-pink-700">
-		Hello, { name } <br />
-		<button hx-post="/clicked" hx-swap="outerHTML">
+	<div class="flex h-screen w-full justify-center items-center text-blue-600">
+		Hello, { name } &nbsp;
+		<button hx-post="/clicked" hx-swap="outerHTML" hx-target="closest div">
       Click Me!
     </button>
 	</div>
 }
 
 templ Clicked() {
-	<div class="flex h-screen w-full justify-center items-center text-pink-700">
+	<div class="flex h-screen w-full justify-center items-center text-blue-600">
 		I'm from the server
 	</div>
+}
+
+templ TestPage(name string){
+	@Page("Test") {
+		@Hello(name)
+	}
 }
