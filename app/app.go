@@ -49,6 +49,23 @@ func App() {
 		return HTML(c, components.TodosPage())
 	})
 
+	app.Post("/todos/toggle/:id", func(c *fiber.Ctx) error {
+		id, err := c.ParamsInt("id")
+
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+		}
+
+		for idx, todo := range todos {
+			if todo.ID == id {
+				todos[idx].Done = !todos[idx].Done
+				return HTML(c, components.TodoItem(todos[idx]))
+			}
+		}
+
+		return c.Status(fiber.StatusNotFound).SendString("Unable to find todo item")
+	})
+
 	log.Fatal(app.Listen(":4000"))
 }
 
