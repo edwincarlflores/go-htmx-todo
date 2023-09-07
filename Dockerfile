@@ -4,33 +4,28 @@
 # Use the offical golang image to create a binary.
 # This is based on Debian and sets the GOPATH to /go.
 # https://hub.docker.com/_/golang
-FROM golang:1.21 as builder
+FROM golang:1.21
 
-# Create and change to the app directory.
+# Set destination for COPY
 WORKDIR /app
 
-# Retrieve application dependencies.
-# This allows the container build to reuse cached dependencies.
-# Expecting to copy go.mod and if present go.sum.
-COPY go.* ./
-RUN go mod download && go mod verify
+# Download Go modules
+COPY go.mod go.sum ./
+RUN go mod download
 
-# Copy local code to the container image.
-COPY . ./
+# Copy the source code. Note the slash at the end, as explained in
+# https://docs.docker.com/engine/reference/builder/#copy
+COPY *.go ./
 
-# Build the binary.
-RUN go build -v -o server
+# Build
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app-server
 
-# Use the official Debian slim image for a lean production container.
-# https://hub.docker.com/_/debian
-# https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
-FROM debian:buster-slim
-RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+# Optional:
+# To bind to a TCP port, runtime parameters must be supplied to the docker command.
+# But we can document in the Dockerfile what ports
+# the application is going to listen on by default.
+# https://docs.docker.com/engine/reference/builder/#expose
+EXPOSE 8080
 
-# Copy the binary to the production image from the builder stage.
-COPY --from=builder /app/server /app/server
-
-# Run the web service on container startup.
-CMD ["/app/server"]
+# Run
+CMD ["/app-server"]

@@ -82,7 +82,7 @@ func App() {
 
 	})
 
-	log.Fatal(app.Listen(":4000"))
+	log.Fatal(app.Listen(":8080"))
 }
 
 func HTML(c *fiber.Ctx, comp templ.Component) error {
